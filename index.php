@@ -7,45 +7,38 @@ require 'db_connect.php';
     <meta charset="UTF-8">
     <title>Comprehensive HR Metrics Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .chart-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .chart-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        canvas {
-            width: 100% !important;
-            height: 300px !important;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
     </style>
 </head>
-<body>
-    <h1>Comprehensive HR Metrics Dashboard</h1>
-    
-    <div class="chart-container">
-        <canvas id="employeeChart"></canvas>
-        <canvas id="satisfactionChart"></canvas>
-    </div>
-    
-    <div class="chart-grid">
-        <canvas id="turnoverChart"></canvas>
-        <canvas id="trainingChart"></canvas>
+<body class="bg-gray-100 font-sans antialiased">
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white shadow-xl rounded-lg overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-6">
+                <h1 class="text-3xl font-bold text-white text-center mb-2">HR Metrics Dashboard</h1>
+                <p class="text-center text-blue-100">Comprehensive Insights Across Departments</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 p-6">
+                <div class="bg-gray-50 rounded-lg shadow-md p-4">
+                    <canvas id="employeeChart"></canvas>
+                </div>
+                <div class="bg-gray-50 rounded-lg shadow-md p-4">
+                    <canvas id="satisfactionChart"></canvas>
+                </div>
+                <div class="bg-gray-50 rounded-lg shadow-md p-4">
+                    <canvas id="turnoverChart"></canvas>
+                </div>
+                <div class="bg-gray-50 rounded-lg shadow-md p-4">
+                    <canvas id="trainingChart"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Mock data for demonstration (would typically come from backend)
+        // Mock data for demonstration
         const mockData = [
             {
                 department: 'Engineering',
@@ -93,8 +86,8 @@ require 'db_connect.php';
                     datasets: [{
                         label: 'Number of Employees',
                         data: data.map(d => d.employees),
-                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
                         borderWidth: 1
                     }]
                 },
@@ -103,7 +96,16 @@ require 'db_connect.php';
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Employees per Department'
+                            text: 'Employees per Department',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
                         }
                     }
                 }
@@ -119,9 +121,9 @@ require 'db_connect.php';
                     datasets: [{
                         label: 'Average Satisfaction Score',
                         data: data.map(d => d.avg_satisfaction),
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        pointBackgroundColor: 'rgba(255, 99, 132, 1)'
+                        backgroundColor: 'rgba(134, 239, 172, 0.2)',
+                        borderColor: 'rgba(34, 197, 94, 1)',
+                        pointBackgroundColor: 'rgba(34, 197, 94, 1)'
                     }]
                 },
                 options: {
@@ -129,7 +131,11 @@ require 'db_connect.php';
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Department Satisfaction Scores'
+                            text: 'Department Satisfaction Scores',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
                         }
                     }
                 }
@@ -145,8 +151,8 @@ require 'db_connect.php';
                     datasets: [{
                         label: 'Turnover Rate (%)',
                         data: data.map(d => d.turnover_rate),
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        backgroundColor: 'rgba(239, 68, 68, 0.2)',
                         fill: true
                     }]
                 },
@@ -155,7 +161,11 @@ require 'db_connect.php';
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Turnover Rates by Department'
+                            text: 'Turnover Rates by Department',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
                         }
                     }
                 }
@@ -172,11 +182,11 @@ require 'db_connect.php';
                         label: 'Training Hours',
                         data: data.map(d => d.training_hours),
                         backgroundColor: [
-                            'rgba(255, 206, 86, 0.6)',
-                            'rgba(54, 162, 235, 0.6)',
-                            'rgba(255, 99, 132, 0.6)',
-                            'rgba(75, 192, 192, 0.6)',
-                            'rgba(153, 102, 255, 0.6)'
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(34, 197, 94, 0.7)',
+                            'rgba(239, 68, 68, 0.7)',
+                            'rgba(249, 115, 22, 0.7)',
+                            'rgba(168, 85, 247, 0.7)'
                         ]
                     }]
                 },
@@ -185,7 +195,11 @@ require 'db_connect.php';
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Training Hours per Department'
+                            text: 'Training Hours per Department',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
                         }
                     }
                 }
