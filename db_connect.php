@@ -1,6 +1,6 @@
 <?php
 $host = 'localhost';
-$db   = 'dusba';
+$db   = 'hr_database';
 $user = 'root';
 $pass = '';
 
