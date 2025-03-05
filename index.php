@@ -138,142 +138,204 @@
         </div>
     </div>
 
-    <script>
-        const chartInstances = {}; // Store chart instances to avoid multiple creations
+  
+<script>
+    const chartInstances = {}; // Store chart instances
+function initializeCharts() {
+   
+chartInstances["kpiChart"] = createChart("kpiChart", "bar", {
+    labels: [],
+    datasets: [{
+        label: "Employee Count",
+        data: [],
+        backgroundColor: [
+            "rgba(54, 162, 235, 0.7)",
+            "rgba(75, 192, 192, 0.7)",
+            "rgba(255, 159, 64, 0.7)",
+            "rgba(153, 102, 255, 0.7)"
+        ],
+        borderColor: [
+            "rgba(54, 162, 235, 1)",
+            "rgba(75, 192, 192, 1)",
+            "rgba(255, 159, 64, 1)",
+            "rgba(153, 102, 255, 1)"
+        ],
+        borderWidth: 1
+    }]
+});
 
-        function createChart(chartId, type, data) {
-            const canvas = document.getElementById(chartId);
+chartInstances["recruitmentChart"] = createChart("recruitmentChart", "line", {
+    labels: [],
+    datasets: [{
+        label: "New Hires",
+        data: [],
+        backgroundColor: "rgba(10, 200, 150, 0.3)",
+        borderColor: "rgba(10, 200, 150, 1)",
+        borderWidth: 2,
+        fill: true
+    }]
+});
 
-            // Check if chart already exists and destroy it before creating a new one
-            if (chartInstances[chartId]) {
-                chartInstances[chartId].destroy();
-            }
+chartInstances["performanceChart"] = createChart("performanceChart", "pie", {
+    labels: [],
+    datasets: [{
+        label: "Performance Ratings",
+        data: [],
+        backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"],
+        borderColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"],
+        borderWidth: 1
+    }]
+});
 
-            chartInstances[chartId] = new Chart(canvas, {
-                type: type,
-                data: data,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false
-                }
-            });
+chartInstances["turnoverChart"] = createChart("turnoverChart", "bar", {
+    labels: [],
+    datasets: [{
+        label: "Turnover Rate",
+        data: [],
+        backgroundColor: [
+            "rgba(255, 99, 132, 0.7)",
+            "rgba(255, 205, 86, 0.7)",
+            "rgba(75, 192, 192, 0.7)"
+        ],
+        borderColor: [
+            "rgba(255, 99, 132, 1)",
+            "rgba(255, 205, 86, 1)",
+            "rgba(75, 192, 192, 1)"
+        ],
+        borderWidth: 1
+    }]
+});
+}
+   
 
-            return chartInstances[chartId]; // Store and return the chart instance
-        }
+async function fetchHRMetrics() {
+    try {
+        const response = await fetch("hr_metrics.php");
+        const hrData = await response.json();
+        console.log("Fetched HR Data:", hrData); // Debugging
 
-        // Define chart data with multiple datasets and colors
+        updateAllCharts(hrData); // Update all charts
+    } catch (error) {
+        console.error("Error fetching HR Metrics:", error);
+    }
+}
+
+    function updateChartData(hrData) {
+        // Extract labels (departments) and data
+        const labels = hrData.map(entry => entry.department);
+        const employeeData = hrData.map(entry => entry.employees);
+        const satisfactionData = hrData.map(entry => parseFloat(entry.avg_satisfaction));
+
         const chartData = {
-            kpi: {
-                labels: ["Headcount", "Salary", "Satisfaction", "Retention"],
-                datasets: [{
-                    label: "KPI Metrics",
-                    data: [524, 85420, 4.2, 12.5],
-                    backgroundColor: [
-                        'rgba(54, 162, 235, 0.7)',   // Blue
-                        'rgba(255, 99, 132, 0.7)',   // Red
-                        'rgba(75, 192, 192, 0.7)',   // Green
-                        'rgba(255, 206, 86, 0.7)'    // Yellow
-                    ]
-                }]
-            },
-            recruitment: {
-                labels: ["Jan", "Feb", "Mar", "Apr"],
+            hrMetrics: {
+                labels: labels,
                 datasets: [
                     {
-                        label: "New Hires",
-                        data: [10, 15, 8, 12],
-                        backgroundColor: 'rgba(16, 185, 129, 0.7)',  // Green
-                        borderColor: 'rgba(16, 185, 129, 1)'
+                        label: "Number of Employees",
+                        data: employeeData,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)'
                     },
                     {
-                        label: "Interviews",
-                        data: [25, 30, 22, 28],
-                        backgroundColor: 'rgba(99, 102, 241, 0.7)',  // Indigo
-                        borderColor: 'rgba(99, 102, 241, 1)'
-                    }
-                ]
-            },
-            performance: {
-                labels: ["John", "Emily", "Michael", "Sarah"],
-                datasets: [
-                    {
-                        label: "Performance Score",
-                        data: [85, 90, 78, 92],
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.7)',   // Red
-                            'rgba(54, 162, 235, 0.7)',   // Blue
-                            'rgba(255, 206, 86, 0.7)',   // Yellow
-                            'rgba(75, 192, 192, 0.7)'    // Green
-                        ]
-                    }
-                ]
-            },
-            turnover: {
-                labels: ["Q1", "Q2", "Q3", "Q4"],
-                datasets: [
-                    {
-                        label: "Voluntary Turnover",
-                        data: [3, 5, 2, 4],
-                        backgroundColor: 'rgba(239, 68, 68, 0.7)',  // Red
-                        borderColor: 'rgba(239, 68, 68, 1)'
-                    },
-                    {
-                        label: "Involuntary Turnover",
-                        data: [2, 1, 3, 1],
-                        backgroundColor: 'rgba(245, 158, 11, 0.7)', // Amber
-                        borderColor: 'rgba(245, 158, 11, 1)'
+                        label: "Average Satisfaction",
+                        data: satisfactionData,
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                        borderColor: 'rgba(255, 99, 132, 1)'
                     }
                 ]
             }
         };
 
-        // Create charts with different default types
-        let kpiChart = createChart("kpiChart", "doughnut", chartData.kpi);
-        let recruitmentChart = createChart("recruitmentChart", "line", chartData.recruitment);
-        let performanceChart = createChart("performanceChart", "pie", chartData.performance);
-        let turnoverChart = createChart("turnoverChart", "bar", chartData.turnover);
+        // Create the chart
+        createChart("hrMetricsChart", "bar", chartData.hrMetrics);
 
-        function updateChart(chart, chartId, newType, data) {
-            chart.destroy(); // Destroy the existing chart
+        // Handle dropdown change event
+        document.getElementById("hrMetricsChartType").addEventListener("change", function (event) {
+            const newType = event.target.value;
+            updateChart(chartInstances["hrMetricsChart"], "hrMetricsChart", newType, chartData.hrMetrics);
+        });
+    }
 
-            // Get the parent container
-            let canvasContainer = document.getElementById(chartId).parentNode;
+    function createChart(chartId, type, data) {
+        const canvas = document.getElementById(chartId);
 
-            // Remove the old canvas
-            document.getElementById(chartId).remove();
-
-            // Create a new canvas and append it to the container
-            let newCanvas = document.createElement("canvas");
-            newCanvas.id = chartId;
-            newCanvas.classList.add("h-64"); // Ensure fixed height to prevent infinite growth
-            canvasContainer.appendChild(newCanvas);
-
-            // Recreate the chart with proper options
-            return new Chart(newCanvas, {
-                type: newType,
-                data: data,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false // Prevent stretching
-                }
-            });
+        if (chartInstances[chartId]) {
+            chartInstances[chartId].destroy();
         }
 
-        document.addEventListener("DOMContentLoaded", function () {
-            // Function to handle dropdown change
-            function handleChartTypeChange(chartId, chartInstance, chartData) {
-                document.getElementById(chartId + "Type").addEventListener("change", function (event) {
-                    const newType = event.target.value;
-                    chartInstances[chartId] = updateChart(chartInstances[chartId], chartId, newType, chartData);
-                });
+        chartInstances[chartId] = new Chart(canvas, {
+            type: type,
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
             }
-
-            // Attach event listeners for each chart
-            handleChartTypeChange("kpiChart", kpiChart, chartData.kpi);
-            handleChartTypeChange("recruitmentChart", recruitmentChart, chartData.recruitment);
-            handleChartTypeChange("performanceChart", performanceChart, chartData.performance);
-            handleChartTypeChange("turnoverChart", turnoverChart, chartData.turnover);
         });
-    </script>
+
+        return chartInstances[chartId];
+    }
+
+function updateAllCharts(hrData) {
+    if (!hrData || !Array.isArray(hrData)) {
+        console.error("Invalid HR Data:", hrData);
+        return;
+    }
+
+    const labels = hrData.map(item => item.department);
+    const employeeCounts = hrData.map(item => item.employees);
+    const satisfactionScores = hrData.map(item => parseFloat(item.avg_satisfaction));
+
+    updateChart("kpiChart", labels, employeeCounts);
+    updateChart("recruitmentChart", labels, satisfactionScores);
+    updateChart("performanceChart", labels, employeeCounts);
+    updateChart("turnoverChart", labels, satisfactionScores);
+}
+
+function updateChart(chartId, labels, data) {
+    if (chartInstances[chartId]) {
+        chartInstances[chartId].data.labels = labels;
+        chartInstances[chartId].data.datasets[0].data = data;
+        chartInstances[chartId].update();
+    } else {
+        console.error(`⚠️ ${chartId} not found in chartInstances!`);
+    }
+}
+  
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    initializeCharts();
+    fetchHRMetrics();
+
+    document.querySelectorAll("select").forEach(select => {
+        select.addEventListener("change", function (event) {
+            const chartId = event.target.id.replace("Type", ""); // Match chart ID
+            const newType = event.target.value;
+
+            if (chartInstances[chartId]) {
+                updateChartType(chartId, newType);
+            } else {
+                console.error(`⚠️ Chart ${chartId} not found!`);
+            }
+        });
+    });
+});
+
+function updateChartType(chartId, newType) {
+    if (chartInstances[chartId]) {
+        const oldData = chartInstances[chartId].data;
+        chartInstances[chartId].destroy();
+        chartInstances[chartId] = new Chart(document.getElementById(chartId), {
+            type: newType,
+            data: oldData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+}
+
+</script>
 </body>
 </html>
